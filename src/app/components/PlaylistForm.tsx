@@ -76,17 +76,17 @@ const PlaylistForm = () => {
       {error && <p className="mt-4 text-red-500">{error}</p>}
       {result && (
         <div className="mt-4 space-y-2">
-          <p className="text-lg font-semibold dark:text-white">
+          <p className="text-lg font-semibold  text-gray-700 dark:text-white">
             Total Videos: {result.totalVideos}
           </p>
-          <p className="text-lg font-semibold dark:text-white">
+          <p className="text-lg font-semibold  text-gray-700 dark:text-white">
             Total Duration: {result.totalDuration}
           </p>
-          <p className="text-lg font-semibold dark:text-white">
+          <p className="text-lg font-semibold  text-gray-700 dark:text-white">
             Average Video Duration: {result.averageVideoDuration}
           </p>
           <div>
-            <strong className="block text-lg font-semibold dark:text-white">
+            <strong className="block text-lg font-semibold  text-gray-700 dark:text-white">
               Adjusted Durations at Different Speeds:
             </strong>
             <div className="flex flex-wrap justify-center gap-6 mt-4">
