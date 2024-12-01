@@ -55,7 +55,7 @@ const PlaylistForm = () => {
           value={playlistUrl}
           onChange={(e) => setPlaylistUrl(e.target.value)}
           placeholder="Enter YouTube Playlist URL"
-          className="w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-md"
+          className="w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white  text-gray-700 rounded-md"
           required
         />
         <button
