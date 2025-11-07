@@ -78,7 +78,7 @@ const PlaylistForm = () => {
           onChange={(e) => {
             const value = e.target.value ? Number(e.target.value) : 0;
             if (result && value > result.totalVideos) {
-              setError("❌ You've already completed all the videos!");
+              setError(" You piece of sh!t, you have already completed all the videos!");
             } else {
               setError(null);
             }
