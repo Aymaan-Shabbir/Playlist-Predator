@@ -4,14 +4,6 @@
 import { useState } from "react";
 import { PlaylistInfo } from "@/app/types/playlistInfo";
 import { Loader2 } from "lucide-react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 
 const PlaylistForm = () => {
   const [playlistUrl, setPlaylistUrl] = useState<string>("");
@@ -55,7 +47,6 @@ const PlaylistForm = () => {
     return "#9C27B0";
   };
 
-  // Helper to convert time string to seconds
   const parseDuration = (timeStr: string) => {
     const parts = timeStr.split(":").map(Number);
     if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
@@ -66,7 +57,6 @@ const PlaylistForm = () => {
   return (
     <div className="max-w-lg mx-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Playlist URL Input */}
         <input
           type="text"
           value={playlistUrl}
@@ -78,8 +68,6 @@ const PlaylistForm = () => {
           required
         />
 
-        {/* Completed Videos Input */}
-        {/* Completed Videos Input */}
         <input
           type="number"
           min="0"
@@ -103,9 +91,6 @@ const PlaylistForm = () => {
   transition duration-200 ease-in-out"
         />
 
-        {/* Error Message */}
-
-        {/* Submit Button */}
         <button
           type="submit"
           className="w-full p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 
@@ -123,13 +108,10 @@ const PlaylistForm = () => {
         </button>
       </form>
 
-      {/* Error Message */}
       {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
 
-      {/* Results Section */}
       {result && (
         <div className="mt-6 space-y-6">
-          {/* Total Stats */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
               Total Playlist Info
@@ -144,44 +126,30 @@ const PlaylistForm = () => {
               <strong>Average Duration:</strong> {result.averageVideoDuration}
             </p>
 
-            {/* PIE CHART SECTION */}
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold text-center text-gray-800 dark:text-white mb-4">
-                Playlist Progress Overview
-              </h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: "Completed Videos", value: completedVideos },
-                      {
-                        name: "Remaining Videos",
-                        value:
-                          result.totalVideos - completedVideos >= 0
-                            ? result.totalVideos - completedVideos
-                            : 0,
-                      },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label
-                    dataKey="value"
-                  >
-                    <Cell fill="#4CAF50" />
-                    <Cell fill="#FF5252" />
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1f2937",
-                      border: "1px solid #4b5563",
-                      borderRadius: "8px",
-                    }}
-                    itemStyle={{ color: "#fff" }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+            {/* Progress Circle (Pure Tailwind) */}
+            <div className="mt-8 flex flex-col items-center">
+              <div className="relative w-32 h-32 rounded-full">
+                <div
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: `conic-gradient(#4CAF50 ${
+                      (completedVideos / result.totalVideos) * 100
+                    }%, #FF5252 0)`,
+                  }}
+                ></div>
+                <div className="absolute inset-3 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center">
+                  <span className="font-semibold text-gray-700 dark:text-white text-lg">
+                    {Math.min(
+                      ((completedVideos / result.totalVideos) * 100).toFixed(0),
+                      100
+                    )}
+                    %
+                  </span>
+                </div>
+              </div>
+              <p className="mt-2 text-gray-700 dark:text-gray-300">
+                Completed vs Remaining
+              </p>
             </div>
 
             {/* Duration at Different Speeds */}
@@ -193,32 +161,22 @@ const PlaylistForm = () => {
                 const speed = (1 + index * 0.25).toFixed(2);
                 const color = getSpeedColor(parseFloat(speed));
 
-                const pieData = [
-                  { name: "Filled", value: percent },
-                  { name: "Empty", value: 100 - percent },
-                ];
-
                 return (
                   <div key={index} className="flex flex-col items-center">
-                    <ResponsiveContainer width={100} height={100}>
-                      <PieChart>
-                        <Pie
-                          data={pieData}
-                          dataKey="value"
-                          startAngle={90}
-                          endAngle={-270}
-                          innerRadius={30}
-                          outerRadius={45}
-                        >
-                          <Cell fill={color} />
-                          <Cell fill="#E5E7EB" />
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <span className="text-sm text-gray-700 dark:text-white mt-2 font-semibold">
-                      {speed}x
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="relative w-20 h-20 rounded-full">
+                      <div
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: `conic-gradient(${color} ${percent}%, #E5E7EB 0)`,
+                        }}
+                      ></div>
+                      <div className="absolute inset-3 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center">
+                        <span className="font-semibold text-sm text-gray-700 dark:text-white">
+                          {speed}x
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                       {duration}
                     </span>
                   </div>
@@ -250,32 +208,22 @@ const PlaylistForm = () => {
                   const speed = (1 + index * 0.25).toFixed(2);
                   const color = getSpeedColor(parseFloat(speed));
 
-                  const pieData = [
-                    { name: "Filled", value: percent },
-                    { name: "Empty", value: 100 - percent },
-                  ];
-
                   return (
                     <div key={index} className="flex flex-col items-center">
-                      <ResponsiveContainer width={100} height={100}>
-                        <PieChart>
-                          <Pie
-                            data={pieData}
-                            dataKey="value"
-                            startAngle={90}
-                            endAngle={-270}
-                            innerRadius={30}
-                            outerRadius={45}
-                          >
-                            <Cell fill={color} />
-                            <Cell fill="#E5E7EB" />
-                          </Pie>
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <span className="text-sm text-gray-700 dark:text-white mt-2 font-semibold">
-                        {speed}x
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="relative w-20 h-20 rounded-full">
+                        <div
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            background: `conic-gradient(${color} ${percent}%, #E5E7EB 0)`,
+                          }}
+                        ></div>
+                        <div className="absolute inset-3 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center">
+                          <span className="font-semibold text-sm text-gray-700 dark:text-white">
+                            {speed}x
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                         {duration}
                       </span>
                     </div>
