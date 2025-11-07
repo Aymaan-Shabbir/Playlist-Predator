@@ -47,6 +47,7 @@ const PlaylistForm = () => {
     return "#9C27B0";
   };
 
+  // Convert duration string (HH:MM:SS or MM:SS) to seconds
   const parseDuration = (timeStr: string) => {
     const parts = timeStr.split(":").map(Number);
     if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
@@ -55,8 +56,9 @@ const PlaylistForm = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="max-w-lg mx-auto p-4">
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Playlist URL Input */}
         <input
           type="text"
           value={playlistUrl}
@@ -68,6 +70,7 @@ const PlaylistForm = () => {
           required
         />
 
+        {/* Completed Videos Input */}
         <input
           type="number"
           min="0"
@@ -75,9 +78,7 @@ const PlaylistForm = () => {
           onChange={(e) => {
             const value = e.target.value ? Number(e.target.value) : 0;
             if (result && value > result.totalVideos) {
-              setError(
-                "You piece of sh!t , you've already finished all the videos!"
-              );
+              setError("❌ You've already completed all the videos!");
             } else {
               setError(null);
             }
@@ -85,16 +86,17 @@ const PlaylistForm = () => {
           }}
           placeholder="Enter number of videos completed"
           className="w-full p-3 border border-gray-300 rounded-lg 
-  text-gray-800 placeholder-gray-500 
-  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-  dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 
-  transition duration-200 ease-in-out"
+            text-gray-800 placeholder-gray-500 
+            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+            dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 
+            transition duration-200 ease-in-out"
         />
 
+        {/* Submit Button */}
         <button
           type="submit"
           className="w-full p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 
-          dark:bg-blue-700 dark:hover:bg-blue-600 transition duration-200 ease-in-out font-semibold"
+            dark:bg-blue-700 dark:hover:bg-blue-600 transition duration-200 ease-in-out font-semibold"
           disabled={loading}
         >
           {loading ? (
@@ -108,10 +110,13 @@ const PlaylistForm = () => {
         </button>
       </form>
 
+      {/* Error Message */}
       {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
 
+      {/* Results Section */}
       {result && (
         <div className="mt-6 space-y-6">
+          {/* Total Stats */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
               Total Playlist Info
@@ -126,8 +131,8 @@ const PlaylistForm = () => {
               <strong>Average Duration:</strong> {result.averageVideoDuration}
             </p>
 
-            {/* Progress Circle (Pure Tailwind) */}
-            <div className="mt-8 flex flex-col items-center">
+            {/* Completed vs Remaining Circle */}
+            <div className="mt-6 flex flex-col items-center">
               <div className="relative w-32 h-32 rounded-full">
                 <div
                   className="absolute inset-0 rounded-full"
@@ -140,7 +145,7 @@ const PlaylistForm = () => {
                 <div className="absolute inset-3 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center">
                   <span className="font-semibold text-gray-700 dark:text-white text-lg">
                     {Math.min(
-                      ((completedVideos / result.totalVideos) * 100).toFixed(0),
+                      parseInt(((completedVideos / result.totalVideos) * 100).toFixed(0)),
                       100
                     )}
                     %
@@ -198,37 +203,40 @@ const PlaylistForm = () => {
                 <strong>Remaining Duration:</strong> {result.remainingDuration}
               </p>
 
+              {/* Remaining Durations at Speeds */}
               <div className="flex flex-wrap justify-center gap-6 mt-4">
-                {result.adjustedRemainingDurations?.map((duration, index) => {
-                  const base = parseDuration(
-                    result.adjustedRemainingDurations[0]
-                  );
-                  const current = parseDuration(duration);
-                  const percent = Math.max((current / base) * 100, 1);
-                  const speed = (1 + index * 0.25).toFixed(2);
-                  const color = getSpeedColor(parseFloat(speed));
+                {(result.adjustedRemainingDurations ?? []).map(
+                  (duration, index) => {
+                    const remainingDurations =
+                      result.adjustedRemainingDurations ?? [];
+                    const base = parseDuration(remainingDurations[0]);
+                    const current = parseDuration(duration);
+                    const percent = Math.max((current / base) * 100, 1);
+                    const speed = (1 + index * 0.25).toFixed(2);
+                    const color = getSpeedColor(parseFloat(speed));
 
-                  return (
-                    <div key={index} className="flex flex-col items-center">
-                      <div className="relative w-20 h-20 rounded-full">
-                        <div
-                          className="absolute inset-0 rounded-full"
-                          style={{
-                            background: `conic-gradient(${color} ${percent}%, #E5E7EB 0)`,
-                          }}
-                        ></div>
-                        <div className="absolute inset-3 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center">
-                          <span className="font-semibold text-sm text-gray-700 dark:text-white">
-                            {speed}x
-                          </span>
+                    return (
+                      <div key={index} className="flex flex-col items-center">
+                        <div className="relative w-20 h-20 rounded-full">
+                          <div
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              background: `conic-gradient(${color} ${percent}%, #E5E7EB 0)`,
+                            }}
+                          ></div>
+                          <div className="absolute inset-3 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center">
+                            <span className="font-semibold text-sm text-gray-700 dark:text-white">
+                              {speed}x
+                            </span>
+                          </div>
                         </div>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                          {duration}
+                        </span>
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                        {duration}
-                      </span>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
               </div>
             </div>
           )}
